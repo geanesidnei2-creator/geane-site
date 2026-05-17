@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Painel Admin - Geane</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ff4d88;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: 20px auto;
+      box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #25d366;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1ea856;
+    }
+
+    .btn-cancelar {
+      background: #555;
+    }
+
+    .btn-cancelar:hover {
+      background: #333;
+    }
+
+    .painel-botoes {
+      max-width: 900px;
+      margin: 20px auto;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .painel-botoes button {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .btn-mostrar {
+      background: #ff4d88;
+    }
+
+    .btn-mostrar:hover {
+      background: #d93a6e;
+    }
+
+    .btn-ocultar {
+      background: #222;
+    }
+
+    .btn-ocultar:hover {
+      background: #000;
+    }
+
+    .btn-atualizar {
+      background: #007bff;
+    }
+
+    .btn-atualizar:hover {
+      background: #0056b3;
+    }
+
+    .buscar-box {
+      max-width: 900px;
+      margin: 20px auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .buscar-box input {
+      flex: 2;
+      margin-top: 0;
+    }
+
+    .buscar-box button {
+      flex: 1;
+      margin-top: 0;
+    }
+
+    .lista {
+      max-width: 900px;
+      margin: auto;
+      margin-top: 20px;
+      display: none; /* começa escondido */
+    }
+
+    .lista.ativa {
+      display: block;
+    }
+
+    .produto {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .produto img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .produto-info {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .produto-info h3 {
+      margin: 0;
+      color: #ff4d88;
+    }
+
+    .produto-info p {
+      margin: 5px 0;
+    }
+
+    .btn-delete {
+      background: red;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      width: 140px;
+    }
+
+    .btn-delete:hover {
+      background: darkred;
+    }
+
+    .btn-editar {
+      background: orange;
+      width: 140px;
+    }
+
+    .btn-editar:hover {
+      background: #cc8400;
+    }
+
+    h2 {
+      margin-top: 30px;
+      color: #333;
+    }
+    .upload-area {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.file-label {
+  flex: 1;
+  background: #eee;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #ccc;
+}
+
+.file-label:hover {
+  background: #ddd;
+}
+
+.file-label input {
+  display: none;
+}
+
+.btn-upload {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.btn-upload:hover {
+  background: #0056b3;
+}
+    
+  </style>
+</head>
+
+<body>
+
+  <h1>🔧 Painel Administrativo</h1>
+
+  <form id="formProduto">
+    <h2>Adicionar / Editar Produto</h2>
+
+    <input type="hidden" id="produtoId" />
+
+    <label>Categoria:</label>
+    <select id="categoria">
+      <option value="Cozinha">🍳 Cozinha</option>
+      <option value="Academia">🏋️ Academia</option>
+      <option value="Avon & Natura">💄 Avon & Natura</option>
+      <option value="Demillus">👙 Demillus</option>
+      <option value="Sala">🛋️ Sala</option>
+      <option value="Banheiro">🚿 Banheiro</option>
+      <option value="Promoções">⚡ Promoções</option>
+    </select>
+
+    <input type="text" id="nome" placeholder="Nome do Produto" required />
+    <input type="number" id="preco" placeholder="Preço (ex: 29.90)" step="0.01" required />
+    <input type="hidden" id="imagem" />
+
+    <label style="margin-top: 15px; display:block;">Upload de imagem:</label>
+
+<div class="upload-area">
+
+  <label class="file-label">
+    📂 Escolher imagem
+    <input type="file" id="uploadImagem" accept="image/*">
+  </label>
+
+  <button type="button" class="btn-upload" onclick="enviarImagem()">
+    📤 Enviar
+  </button>
+
+</div>
+
+<p id="nomeArquivo" style="margin-top:8px; font-size:14px; color:#555;"></p>
+<p id="statusUpload" style="margin-top:5px; font-weight:bold;"></p>
+    <button type="submit">💾 Salvar Produto</button>
+
+    <button type="button" class="btn-cancelar" onclick="cancelarEdicao()">
+      ❌ Cancelar Edição
+    </button>
+  </form>
+
+  <div class="painel-botoes">
+    <button class="btn-mostrar" onclick="mostrarLista()">📦 Mostrar Produtos</button>
+    <button class="btn-ocultar" onclick="ocultarLista()">🙈 Ocultar Produtos</button>
+    <button class="btn-atualizar" onclick="carregarProdutos()">🔄 Atualizar Lista</button>
+  </div>
+
+  <div class="buscar-box">
+    <input type="text" id="buscarInput" placeholder="Digite o ID ou Nome do produto..." />
+    <button onclick="buscarProduto()">🔍 Buscar</button>
+    <button onclick="limparBusca()">🧹 Limpar</button>
+  </div>
+
+  <div class="lista" id="listaProdutos">
+
+    <h2>🍳 Cozinha</h2>
+    <div id="listaCozinha"></div>
+
+    <h2>🏋️ Academia</h2>
+    <div id="listaAcademia"></div>
+
+    <h2>💄 Avon & Natura</h2>
+    <div id="listaAvon"></div>
+
+    <h2>👙 Demillus</h2>
+    <div id="listaDemillus"></div>
+
+    <h2>🛋️ Sala</h2>
+    <div id="listaSala"></div>
+
+    <h2>🚿 Banheiro</h2>
+    <div id="listaBanheiro"></div>
+
+    <h2>⚡ Promoções</h2>
+    <div id="listaPromocoes"></div>
+
+  </div>
+
+<script>
+const API_URL = "https://fastapi-geane.onrender.com";
+
+let produtosCache = [];
+
+// ======================
+// MOSTRAR / OCULTAR LISTA
+// ======================
+function mostrarLista() {
+  document.getElementById("listaProdutos").classList.add("ativa");
+}
+
+function ocultarLista() {
+  document.getElementById("listaProdutos").classList.remove("ativa");
+}
+
+// ======================
+// CARREGAR PRODUTOS
+// ======================
+async function carregarProdutos() {
+  const resposta = await fetch(`${API_URL}/produtos`);
+  const produtos = await resposta.json();
+
+  produtosCache = produtos;
+
+  document.getElementById("listaCozinha").innerHTML = "";
+  document.getElementById("listaAcademia").innerHTML = "";
+  document.getElementById("listaAvon").innerHTML = "";
+  document.getElementById("listaDemillus").innerHTML = "";
+  document.getElementById("listaSala").innerHTML = "";
+  document.getElementById("listaBanheiro").innerHTML = "";
+  document.getElementById("listaPromocoes").innerHTML = "";
+
+  produtos.forEach(produto => {
+    let cardProduto = `
+      <div class="produto">
+
+        ${produto.imagem ? `<img src="${produto.imagem}" alt="${produto.nome}">` : ""}
+          
+        <div class="produto-info">
+          <h3>${produto.nome}</h3>
+          <p><b>Preço:</b> R$ ${produto.preco}</p>
+          <p><b>Categoria:</b> ${produto.categoria}</p>
+          <p><b>ID:</b> ${produto.id}</p>
+        </div>
+
+        <button class="btn-editar" onclick="editarProduto(${produto.id}, '${produto.nome}', ${produto.preco}, '${produto.categoria}', '${produto.imagem || ""}')">
+          ✏️ Editar
+        </button>
+
+        <button class="btn-delete" onclick="deletarProduto(${produto.id})">
+          🗑️ Deletar
+        </button>
+
+      </div>
+    `;
+
+    if (produto.categoria === "Cozinha") {
+      document.getElementById("listaCozinha").innerHTML += cardProduto;
+    } else if (produto.categoria === "Academia") {
+      document.getElementById("listaAcademia").innerHTML += cardProduto;
+    } else if (produto.categoria === "Avon & Natura") {
+      document.getElementById("listaAvon").innerHTML += cardProduto;
+    } else if (produto.categoria === "Demillus") {
+      document.getElementById("listaDemillus").innerHTML += cardProduto;
+    } else if (produto.categoria === "Sala") {
+      document.getElementById("listaSala").innerHTML += cardProduto;
+    } else if (produto.categoria === "Banheiro") {
+      document.getElementById("listaBanheiro").innerHTML += cardProduto;
+    } else if (produto.categoria === "Promoções") {
+      document.getElementById("listaPromocoes").innerHTML += cardProduto;
+    }
+  });
+
+  console.log("Produtos carregados:", produtos);
+}
+
+// ======================
+// BUSCAR PRODUTO
+// ======================
+function buscarProduto() {
+  const valor = document.getElementById("buscarInput").value.trim().toLowerCase();
+
+  if (!valor) {
+    alert("Digite um ID ou nome para buscar.");
+    return;
+  }
+
+  const resultado = produtosCache.filter(p =>
+    p.nome.toLowerCase().includes(valor) || String(p.id) === valor
+  );
+
+  if (resultado.length === 0) {
+    alert("Nenhum produto encontrado!");
+    return;
+  }
+
+  mostrarLista();
+
+  // limpa tudo
+  document.getElementById("listaCozinha").innerHTML = "";
+  document.getElementById("listaAcademia").innerHTML = "";
+  document.getElementById("listaAvon").innerHTML = "";
+  document.getElementById("listaDemillus").innerHTML = "";
+  document.getElementById("listaSala").innerHTML = "";
+  document.getElementById("listaBanheiro").innerHTML = "";
+  document.getElementById("listaPromocoes").innerHTML = "";
+
+  resultado.forEach(produto => {
+    let cardProduto = `
+      <div class="produto">
+
+        ${produto.imagem ? `<img src="${produto.imagem}" alt="${produto.nome}">` : ""}
+
+        <div class="produto-info">
+          <h3>${produto.nome}</h3>
+          <p><b>Preço:</b> R$ ${produto.preco}</p>
+          <p><b>Categoria:</b> ${produto.categoria}</p>
+          <p><b>ID:</b> ${produto.id}</p>
+        </div>
+
+        <button class="btn-editar" onclick="editarProduto(${produto.id}, '${produto.nome}', ${produto.preco}, '${produto.categoria}', '${produto.imagem || ""}')">
+          ✏️ Editar
+        </button>
+
+        <button class="btn-delete" onclick="deletarProduto(${produto.id})">
+          🗑️ Deletar
+        </button>
+
+      </div>
+    `;
+
+    if (produto.categoria === "Cozinha") {
+      document.getElementById("listaCozinha").innerHTML += cardProduto;
+    } else if (produto.categoria === "Academia") {
+      document.getElementById("listaAcademia").innerHTML += cardProduto;
+    } else if (produto.categoria === "Avon & Natura") {
+      document.getElementById("listaAvon").innerHTML += cardProduto;
+    } else if (produto.categoria === "Demillus") {
+      document.getElementById("listaDemillus").innerHTML += cardProduto;
+    } else if (produto.categoria === "Sala") {
+      document.getElementById("listaSala").innerHTML += cardProduto;
+    } else if (produto.categoria === "Banheiro") {
+      document.getElementById("listaBanheiro").innerHTML += cardProduto;
+    } else if (produto.categoria === "Promoções") {
+      document.getElementById("listaPromocoes").innerHTML += cardProduto;
+    }
+  });
+}
+
+function limparBusca() {
+  document.getElementById("buscarInput").value = "";
+  carregarProdutos();
+}
+
+// ======================
+// EDITAR
+// ======================
+function editarProduto(id, nome, preco, categoria, imagem) {
+  document.getElementById("produtoId").value = id;
+  document.getElementById("nome").value = nome;
+  document.getElementById("preco").value = preco;
+  document.getElementById("categoria").value = categoria;
+  document.getElementById("imagem").value = imagem;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ======================
+// CANCELAR
+// ======================
+function cancelarEdicao() {
+  document.getElementById("formProduto").reset();
+  document.getElementById("produtoId").value = "";
+  alert("Edição cancelada!");
+}
+
+// ======================
+// DELETAR
+// ======================
+async function deletarProduto(id) {
+  const confirmar = confirm("Tem certeza que deseja deletar este produto?");
+  if (!confirmar) return;
+
+  await fetch(`${API_URL}/produtos/${id}`, {
+    method: "DELETE"
+  });
+
+  carregarProdutos();
+}
+
+// ======================
+// SUBMIT FORM (POST ou PUT)
+// ======================
+document.getElementById("formProduto").addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const id = document.getElementById("produtoId").value;
+  const nome = document.getElementById("nome").value;
+  const preco = parseFloat(document.getElementById("preco").value);
+  const categoria = document.getElementById("categoria").value;
+  const imagem = document.getElementById("imagem").value;
+
+  const produto = { nome, preco, categoria, imagem };
+
+  if (id) {
+    await fetch(`${API_URL}/produtos/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(produto)
+    });
+    if (!categoria) {
+  alert("⚠️ Categoria é obrigatória!");
+  return;
+}
+
+if (!nome) {
+  alert("⚠️ Nome do produto é obrigatório!");
+  return;
+}
+
+if (!imagem && (isNaN(preco) || preco <= 0)) {
+  alert("⚠️ Você precisa preencher o PREÇO ou adicionar uma IMAGEM!");
+  return;
+}
+
+    alert("Produto atualizado!");
+  } else {
+    await fetch(`${API_URL}/produtos`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(produto)
+    });
+
+    alert("Produto cadastrado!");
+  }
+
+  document.getElementById("formProduto").reset();
+  document.getElementById("produtoId").value = "";
+
+  carregarProdutos();
+});
+
+// INICIAR
+carregarProdutos();
+ 
+  async function enviarImagem() {
+  const fileInput = document.getElementById("uploadImagem");
+  const status = document.getElementById("statusUpload");
+
+  if (!fileInput.files.length) {
+    status.innerText = "❌ Selecione uma imagem primeiro!";
+    status.style.color = "red";
+    return;
+  }
+
+  const arquivo = fileInput.files[0];
+
+  const formData = new FormData();
+  formData.append("file", arquivo);
+
+  status.innerText = "⏳ Enviando imagem...";
+  status.style.color = "blue";
+
+  try {
+    const resposta = await fetch(`${API_URL}/upload`, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!resposta.ok) {
+      throw new Error("Falha no upload");
+    }
+
+    const data = await resposta.json();
+
+    // aqui esperamos que a API retorne { "url": "link" }
+    document.getElementById("imagem").value = data.url;
+
+    status.innerText = "✅ Upload concluído!";
+    status.style.color = "green";
+
+  } catch (erro) {
+    status.innerText = "⚠️ Upload falhou (endpoint /upload ainda não existe).";
+    status.style.color = "orange";
+    console.log("Erro upload:", erro);
+  }
+  }
+    document.getElementById("uploadImagem").addEventListener("change", function() {
+    const nomeArquivo = document.getElementById("nomeArquivo");
+
+  if (this.files.length > 0) {
+    nomeArquivo.innerText = "📌 Arquivo selecionado: " + this.files[0].name;
+  } else {
+    nomeArquivo.innerText = "";
+  }
+  });
+</script>
+
+</body>
+</html>
